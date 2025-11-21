@@ -1,0 +1,22 @@
+server:
+  port: 80
+
+auth:
+  method: noauth
+
+sources:
+  - name: "APMED"
+    path: "/srv/apmed"
+    icon: "folder"
+  
+  - name: "LVB"
+    path: "/srv/lvb"
+    icon: "folder"
+  
+  - name: "RDA"
+    path: "/srv/rda"
+    icon: "folder"
+  
+  - name: "RSL"
+    path: "/srv/rsl"
+    icon: "folder"
