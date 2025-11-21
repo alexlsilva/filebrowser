@@ -1,9 +1,4 @@
-# Use a imagem oficial do Quantum (ou sua imagem customizada)
-# Exemplo: Se você tiver uma imagem baseada no Quantum
 FROM filebrowser/filebrowser:latest as prebuilt
-
-# Ou, se estiver usando uma imagem compilada do repositório alexlsilva/filebrowser
-# FROM gtstef/filebrowser:latest as prebuilt
 
 FROM alpine:latest
 ENV FILEBROWSER_DATABASE="/home/filebrowser/data/database.db"
@@ -12,10 +7,9 @@ RUN apk --no-cache add ca-certificates mailcap tzdata curl
 RUN adduser -D -s /bin/true -u 1000 filebrowser
 
 WORKDIR /home/filebrowser
-COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/filebrowser ./
-COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/http ./http
+COPY --from=prebuilt --chown=filebrowser:1000 /filebrowser ./
+COPY --from=prebuilt --chown=filebrowser:1000 /usr/share/filebrowser ./http
 
-# Usando a sintaxe antiga, compatível com forks baseados no v1.x
 RUN printf 'server:\n  port: 80\n\nauth:\n  method: noauth\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
 
 USER filebrowser
