@@ -1,4 +1,3 @@
-cat > /etc/dokploy/compose/geral-filebrowser-lifmra/code/docker-compose.yaml << 'EOF'
 services:
   filebrowser:
     hostname: filebrowser
@@ -29,4 +28,3 @@ services:
 networks:
   dokploy-network:
     external: true
-EOF
