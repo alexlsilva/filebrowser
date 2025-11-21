@@ -2,8 +2,8 @@ server:
   port: 80
 
 auth:
-  method: noauth
-
+  disabled: true
+  
 sources:
   - name: "APMED"
     path: "/srv/apmed"
