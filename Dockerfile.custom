@@ -10,8 +10,7 @@ WORKDIR /home/filebrowser
 COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/filebrowser ./
 COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/http ./http
 
-RUN printf 'server:\n  port: 80\n\nauth:\n  method: noauth\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
-
+RUN printf 'server:\n  port: 80\n\nauth:\n  disabled: true\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
 USER filebrowser
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
