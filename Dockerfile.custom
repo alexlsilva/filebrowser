@@ -1,0 +1,19 @@
+FROM gtstef/filebrowser:latest as prebuilt
+
+FROM alpine:latest
+ENV FILEBROWSER_DATABASE="/home/filebrowser/data/database.db"
+ENV PATH="$PATH:/home/filebrowser"
+RUN apk --no-cache add ca-certificates mailcap tzdata curl
+RUN adduser -D -s /bin/true -u 1000 filebrowser
+
+WORKDIR /home/filebrowser
+COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/filebrowser ./
+COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/http ./http
+
+RUN printf 'server:\n  port: 80\n\nauth:\n  method: noauth\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
+
+USER filebrowser
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:80/health || exit 1
+ENTRYPOINT [ "./filebrowser" ]
