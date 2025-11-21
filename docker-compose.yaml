@@ -1,11 +1,15 @@
+cat > /etc/dokploy/compose/geral-filebrowser-lifmra/code/docker-compose.yaml << 'EOF'
 services:
   filebrowser:
     hostname: filebrowser
     build:
-      context: ../
-      dockerfile: Dockerfile.custom
+      context: ./
+      dockerfile: ./Dockerfile.custom
     volumes:
-      - /home/frontend:/home/frontend:rw
+      - /srv/apmed:/srv/apmed
+      - /srv/lvb:/srv/lvb
+      - /srv/rda:/srv/rda
+      - /srv/rsl:/srv/rsl
     labels:
       - traefik.docker.network=dokploy-network
       - traefik.http.routers.geral-filebrowser-lifmra-30-web.rule=Host(`filebrowser2.axti.pro`)
@@ -25,3 +29,4 @@ services:
 networks:
   dokploy-network:
     external: true
+EOF
