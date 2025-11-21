@@ -1,5 +1,20 @@
-FROM filebrowser/filebrowser:latest as prebuilt
+# Primeira etapa: build
+FROM golang:1.21-alpine AS builder
 
+# Instalar dependências necessárias para compilar
+RUN apk --no-cache add git ca-certificates make
+
+# Clonar o repositório (ou usar o código que já está no contexto)
+WORKDIR /src
+COPY . .
+
+# Baixar módulos Go
+RUN go mod download
+
+# Build do binário
+RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/filebrowser -ldflags="-w -s" .
+
+# Segunda etapa: imagem final
 FROM alpine:latest
 ENV FILEBROWSER_DATABASE="/home/filebrowser/data/database.db"
 ENV PATH="$PATH:/home/filebrowser"
@@ -7,8 +22,10 @@ RUN apk --no-cache add ca-certificates mailcap tzdata curl
 RUN adduser -D -s /bin/true -u 1000 filebrowser
 
 WORKDIR /home/filebrowser
-COPY --from=prebuilt --chown=filebrowser:1000 /filebrowser ./
-COPY --from=prebuilt --chown=filebrowser:1000 /usr/share/filebrowser ./http
+COPY --from=builder --chown=filebrowser:1000 /bin/filebrowser ./
+
+# O Quantum embute os arquivos da interface web dentro do binário, então não precisa copiar ./http
+# Se ele não embutir, talvez precise copiar os arquivos estáticos manualmente, mas normalmente não é necessário.
 
 RUN printf 'server:\n  port: 80\n\nauth:\n  method: noauth\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
 
