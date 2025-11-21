@@ -1,4 +1,9 @@
-FROM gtstef/filebrowser:latest as prebuilt
+# Use a imagem oficial do Quantum (ou sua imagem customizada)
+# Exemplo: Se você tiver uma imagem baseada no Quantum
+FROM filebrowser/filebrowser:latest as prebuilt
+
+# Ou, se estiver usando uma imagem compilada do repositório alexlsilva/filebrowser
+# FROM gtstef/filebrowser:latest as prebuilt
 
 FROM alpine:latest
 ENV FILEBROWSER_DATABASE="/home/filebrowser/data/database.db"
@@ -10,7 +15,9 @@ WORKDIR /home/filebrowser
 COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/filebrowser ./
 COPY --from=prebuilt --chown=filebrowser:1000 /home/filebrowser/http ./http
 
-RUN printf 'server:\n  port: 80\n\nauth:\n  disabled: true\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
+# Usando a sintaxe antiga, compatível com forks baseados no v1.x
+RUN printf 'server:\n  port: 80\n\nauth:\n  method: noauth\n\nsources:\n  - name: "APMED"\n    path: "/srv/apmed"\n  - name: "LVB"\n    path: "/srv/lvb"\n  - name: "RDA"\n    path: "/srv/rda"\n  - name: "RSL"\n    path: "/srv/rsl"\n' > config.yaml
+
 USER filebrowser
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
