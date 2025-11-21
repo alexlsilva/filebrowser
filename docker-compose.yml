@@ -1,0 +1,27 @@
+services:
+  filebrowser:
+    hostname: filebrowser
+    build:
+      context: ../
+      dockerfile: Dockerfile.custom
+    volumes:
+      - /home/frontend:/home/frontend:rw
+    labels:
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.geral-filebrowser-lifmra-30-web.rule=Host(`filebrowser2.axti.pro`)
+      - traefik.http.routers.geral-filebrowser-lifmra-30-web.entrypoints=web
+      - traefik.http.services.geral-filebrowser-lifmra-30-web.loadbalancer.server.port=80
+      - traefik.http.routers.geral-filebrowser-lifmra-30-web.service=geral-filebrowser-lifmra-30-web
+      - traefik.http.routers.geral-filebrowser-lifmra-30-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.geral-filebrowser-lifmra-30-websecure.rule=Host(`filebrowser2.axti.pro`)
+      - traefik.http.routers.geral-filebrowser-lifmra-30-websecure.entrypoints=websecure
+      - traefik.http.services.geral-filebrowser-lifmra-30-websecure.loadbalancer.server.port=80
+      - traefik.http.routers.geral-filebrowser-lifmra-30-websecure.service=geral-filebrowser-lifmra-30-websecure
+      - traefik.http.routers.geral-filebrowser-lifmra-30-websecure.tls.certresolver=letsencrypt
+      - traefik.enable=true
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
